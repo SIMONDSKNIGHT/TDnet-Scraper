@@ -11,12 +11,14 @@ class PDFDownloader:
         self.download_path = download_path
         self.base_url = base_url
         self.metadata = []
-    def download_pdf(self, url, metadata):
+    def download_pdf(self, url,  metadata):
         """Downloads a PDF from a given URL and saves it locally, along with metadata."""
         try:
             full_url = urljoin(self.base_url, url)
             response = requests.get(full_url)
             response.raise_for_status()  # Raise HTTPError for bad responses
+            #foldername is download path + end date
+
             filename = os.path.join(self.download_path, os.path.basename(url))
             
             # Check if file already exists
