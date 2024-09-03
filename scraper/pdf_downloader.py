@@ -41,15 +41,20 @@ class PDFDownloader:
                 "document_name": metadata["document_name"]
             }
             self.metadata.append(metadata_entry)
+            return True
         except requests.RequestException as e:
             print(f"Failed to download {url}: {e}")
+            return False
     def save_metadata(self, file_path):
         # Read the existing data from the file
         if os.path.exists(file_path):
-            
-            with open(file_path, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-            data.extend(self.metadata)
+            try:    
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                data.extend(self.metadata)
+            except json.JSONDecodeError:
+                print(f"Error reading metadata file {file_path}. Creating a new one.")
+                data = self.metadata
             #get rid of duplicates
             data = [dict(t) for t in {tuple(d.items()) for d in data}]
         # Append the new metadata to the existing data
