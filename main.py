@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from datetime import datetime, timedelta
@@ -7,7 +8,18 @@ from scraper.document_finder import DocumentFinder
 from scraper.pdf_downloader import PDFDownloader
 from config.settings import BASE_URL, HEADERS
 
-ID_SOURCE = "ids.txt"
+ID_SOURCE = "resources/ids.txt"
+def get_base_path():
+    if getattr(sys, 'frozen', False):
+        # If the application is running from a PyInstaller bundle
+        return sys._MEIPASS
+    else:
+        # If running normally
+        return os.path.dirname(os.path.abspath(__file__))
+
+BASE_DIR = get_base_path()
+ID_SOURCE = os.path.join(BASE_DIR, ID_SOURCE)  # Ensures proper path handling
+
 
 def initialize_dates_and_folder(start_date, end_date, query, use_id_list, filter_query, download_path):
     pattern = re.compile(r"(\d{8})~(\d{8})-(.+)")
@@ -98,6 +110,9 @@ def choose_download_folder():
         download_path_entry.delete(0, tk.END)
         download_path_entry.insert(0, folder_selected)
 
+# Get the user's default "Downloads" directory
+default_download_path = os.path.join(os.path.expanduser("~"), "Downloads")
+
 # Initialize default dates
 default_start_date, default_end_date = get_default_dates()
 
@@ -126,6 +141,7 @@ filter_entry.grid(row=3, column=1, padx=10, pady=10)
 
 tk.Label(app, text="Download Folder").grid(row=4, column=0, padx=10, pady=10)
 download_path_entry = tk.Entry(app)
+download_path_entry.insert(0, default_download_path)  # Default to Downloads folder
 download_path_entry.grid(row=4, column=1, padx=10, pady=10)
 
 choose_folder_button = tk.Button(app, text="Browse...", command=choose_download_folder)

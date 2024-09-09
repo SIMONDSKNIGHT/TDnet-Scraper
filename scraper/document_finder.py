@@ -14,7 +14,7 @@ class DocumentFinder(BaseScraper):
 
         html = self.get_html(self.base_url, method='POST', data=self.search_criteria)
         if html:
-            self.save_html(html)
+            #self.save_html(html)
             soup = self.parse_html(html)
             document_info = []
             for row in soup.find_all('tr', class_='even'):
